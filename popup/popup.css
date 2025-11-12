@@ -1,0 +1,107 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    width: 200px;
+    margin: 0;
+    padding: 4px;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 4px;
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.status {
+    padding: 4px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.connected {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.disconnected {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+label {
+    font-weight: bold;
+}
+
+input,
+select,
+button {
+    padding: 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 10px;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+.sync-btn {
+    background-color: #2ecc71;
+}
+
+.sync-btn:hover {
+    background-color: #27ae60;
+}
+
+.player-list {
+    margin-top: 4px;
+}
+
+.player-item {
+    padding: 4px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.player-item:hover {
+    background-color: #f9f9f9;
+}
+
+.player-item.selected {
+    background-color: #e1f5fe;
+    border-color: #4fc3f7;
+}

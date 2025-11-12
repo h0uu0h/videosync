@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>播放器同步插件</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+    <div class="container">
+        <div id="status" class="status disconnected">
+            未连接
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="roomId">房间ID:</label>
+                <input type="text" id="roomId" placeholder="输入共享的房间ID">
+            </div>
+
+            <div class="control-group">
+                <label for="serverUrl">服务器地址:</label>
+                <input type="text" id="serverUrl" placeholder="ws://your-sync-server.com" value="ws://localhost:8080">
+            </div>
+
+            <button id="connectBtn">连接</button>
+            <button id="syncBtn" class="sync-btn" disabled>开始同步</button>
+
+            <div class="player-list">
+                <div>检测到的播放器:</div>
+                <div id="playersList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/utils.js"></script>
+    <script src="../scripts/websocket-client.js"></script>
+    <script src="popup.js"></script>
+</body>
+
+</html>
