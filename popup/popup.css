@@ -84,6 +84,26 @@ button:hover {
     background-color: #27ae60;
 }
 
+.rescan-btn {
+    width: 100%;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 4px;
+    margin: 4px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.rescan-btn:hover {
+    background: #45a049;
+}
+
+.rescan-btn:active {
+    background: #3d8b40;
+}
+
 .player-list {
     margin-top: 4px;
 }

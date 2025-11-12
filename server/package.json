@@ -14,7 +14,7 @@
         "sync",
         "synchronization"
     ],
-    "author": "Your Name",
+    "author": "houjq",
     "license": "MIT",
     "dependencies": {
         "ws": "^8.14.2"
