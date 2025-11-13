@@ -75,11 +75,10 @@ async function scanForPlayers() {
             return;
         }
 
-        console.log('📡 尝试与内容脚本通信...');
         let response;
         try {
             response = await chrome.tabs.sendMessage(tab.id, {
-                action: 'getVideoPlayers'
+                action: 'rescanPlayers'
             });
             console.log('✅ 内容脚本响应:', response);
         } catch (error) {
@@ -89,7 +88,6 @@ async function scanForPlayers() {
             await chrome.scripting.executeScript({
                 target: { tabId: tab.id },
                 files: [
-                    'scripts/utils.js',
                     'content/video-detector.js',
                     'content/content.js'
                 ]
@@ -100,7 +98,7 @@ async function scanForPlayers() {
 
             // 重新尝试通信
             response = await chrome.tabs.sendMessage(tab.id, {
-                action: 'getVideoPlayers'
+                action: 'rescanPlayers'
             });
             console.log('✅ 注入后内容脚本响应:', response);
         }
@@ -140,7 +138,6 @@ async function scanForPlayers() {
         renderPlayersList();
     }
 }
-// 手动重新检测播放器
 // 手动重新检测播放器
 async function rescanPlayers() {
     console.log('🔄 === 开始手动重新检测播放器 ===');

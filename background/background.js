@@ -230,6 +230,14 @@ class BackgroundManager {
                 this.controlActiveTabPlayer(message.type, message.data);
                 break;
 
+            case 'player_state_update':
+                console.log('🔄 处理远程播放器状态更新', {
+                    来源: message.clientId,
+                    变化: message.changes,
+                    状态: message.state
+                });
+                this.handleRemoteStateUpdate(message);
+                break;
             case 'sync_request':
                 // 处理同步请求
                 this.handleSyncRequest(message);
@@ -242,7 +250,51 @@ class BackgroundManager {
                 break;
         }
     }
+    handleRemoteStateUpdate(message) {
+        // 不处理自己发送的消息
+        if (message.clientId === this.clientId) {
+            console.log('⏩ 跳过自己发送的状态更新');
+            return;
+        }
 
+        console.log(`🎮 同步远程播放器状态 [来自: ${message.clientId}]:`, {
+            变化: message.changes,
+            当前时间: message.state?.currentTime,
+            播放状态: message.state?.paused ? '暂停' : '播放'
+        });
+
+        // 根据状态变化同步本地播放器
+        if (message.changes && message.changes.length > 0) {
+            message.changes.forEach(change => {
+                switch (change) {
+                    case 'play':
+                        console.log('▶️ 远程播放，同步播放');
+                        this.controlActiveTabPlayer('play', {});
+                        break;
+
+                    case 'pause':
+                        console.log('⏸️ 远程暂停，同步暂停');
+                        this.controlActiveTabPlayer('pause', {});
+                        break;
+
+                    case 'timeupdate':
+                        // 同步播放进度，避免频繁跳转
+                        if (message.state && message.state.currentTime !== undefined) {
+                            const currentTime = message.state.currentTime;
+                            console.log(`⏱️ 远程跳转: ${currentTime.toFixed(1)}秒`);
+
+                            // 添加小延迟避免冲突
+                            setTimeout(() => {
+                                this.controlActiveTabPlayer('seek', {
+                                    currentTime: currentTime
+                                });
+                            }, 200);
+                        }
+                        break;
+                }
+            });
+        }
+    }
     // 控制活跃标签页的播放器
     async controlActiveTabPlayer(command, data) {
         try {

@@ -8,18 +8,30 @@ class VideoDetector {
 
     // 扫描页面中的视频元素
     scanVideoElements() {
+        // 清空之前的视频元素
+        this.videoElements = [];
+
+        // 使用更全面的选择器
         const videos = document.querySelectorAll('video');
         this.videoElements = Array.from(videos);
-        console.log(`检测到 ${this.videoElements.length} 个HTML5视频元素`);
-        return this.videoElements.map((video, index) => ({
-            id: `video_${index}`,
-            name: this.generateVideoName(video, index),
-            element: video,
-            type: 'html5',
-            currentTime: video.currentTime,
-            duration: video.duration,
-            paused: video.paused
-        }));
+
+        console.log(`🔍 扫描到 ${this.videoElements.length} 个HTML5视频元素`);
+
+        return this.videoElements.map((video, index) => {
+            // 检查视频是否真实可用
+            const isUsable = video.readyState > 0 || video.src || video.querySelector('source');
+
+            return {
+                id: `video_${Date.now()}_${index}`,  // 🎯 使用时间戳避免ID冲突
+                name: this.generateVideoName(video, index),
+                element: video,
+                type: 'html5',
+                currentTime: video.currentTime,
+                duration: video.duration,
+                paused: video.paused,
+                usable: isUsable
+            };
+        }).filter(player => player.usable);  // 🎯 只返回可用的播放器
     }
 
     // 生成视频名称
@@ -101,14 +113,34 @@ class VideoDetector {
 
         return players;
     }
+    forceRescan() {
+        console.log('🔄 VideoDetector: 强制重新扫描所有播放器');
 
+        // 清空缓存
+        this.players = [];
+        this.videoElements = [];
+
+        // 重新扫描
+        return this.getAllPlayers();
+    }
     // 获取所有播放器
+    // 修复 getAllPlayers 方法
     getAllPlayers() {
+        console.log('🎯 VideoDetector: 开始扫描播放器');
+
+        // 强制重新扫描，不依赖缓存
         const html5Players = this.scanVideoElements();
         const thirdPartyPlayers = this.detectThirdPartyPlayers();
 
-        this.players = [...html5Players, ...thirdPartyPlayers];
-        return this.players;
+        // 🎯 关键：每次都返回新的扫描结果，不更新内部缓存
+        const currentPlayers = [...html5Players, ...thirdPartyPlayers];
+
+        console.log(`📊 扫描完成: ${currentPlayers.length} 个播放器`);
+
+        // 可选：更新缓存用于监控，但返回的是新扫描的结果
+        this.players = currentPlayers;
+
+        return currentPlayers;
     }
 
     // 开始监控播放器状态变化

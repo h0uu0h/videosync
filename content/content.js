@@ -43,9 +43,19 @@ class VideoSyncContent {
 
         try {
             switch (message.action) {
-                case 'getVideoPlayers':
-                    const players = this.detector.getAllPlayers();
+                case 'rescanPlayers':
+                    console.log('🔄 收到强制重新扫描命令');
+                    // 🎯 使用强制重新扫描，而不是普通的getAllPlayers
+                    const players = this.detector.forceRescan();
+                    console.log(`✅ 重新扫描完成: ${players.length} 个播放器`);
                     response = { players: players };
+                    break;
+
+                case 'getVideoPlayers':
+                    console.log('📋 获取当前播放器列表');
+                    // 普通获取使用现有缓存
+                    const currentPlayers = this.detector.getAllPlayers();
+                    response = { players: currentPlayers };
                     break;
 
                 case 'startSync':
@@ -205,16 +215,26 @@ class VideoSyncContent {
 
     // 监听DOM变化以检测新出现的播放器
     observeDOMChanges() {
-        const observer = new MutationObserver((mutations) => {
+        // 先清理现有的观察器
+        if (this.domObserver) {
+            this.domObserver.disconnect();
+        }
+
+        this.domObserver = new MutationObserver((mutations) => {
             let shouldRescan = false;
 
             mutations.forEach((mutation) => {
+                // 检查新增的节点
                 mutation.addedNodes.forEach((node) => {
                     if (node.nodeType === Node.ELEMENT_NODE) {
+                        // 🎯 更全面的视频元素检测
                         if (node.tagName === 'VIDEO' ||
                             node.querySelector('video') ||
                             node.querySelector('iframe[src*="youtube"]') ||
-                            node.querySelector('iframe[src*="youtu.be"]')) {
+                            node.querySelector('iframe[src*="youtu.be"]') ||
+                            node.querySelector('[class*="video"]') ||
+                            node.querySelector('[class*="player"]')) {
+                            console.log('🆕 检测到新的视频元素');
                             shouldRescan = true;
                         }
                     }
@@ -222,15 +242,19 @@ class VideoSyncContent {
             });
 
             if (shouldRescan) {
+                console.log('🔄 DOM变化触发重新扫描');
                 setTimeout(() => {
-                    this.scanPlayers();
-                }, 1000);
+                    this.detector.forceRescan();
+                }, 500);
             }
         });
 
-        observer.observe(document.body, {
+        // 🎯 更全面的监听配置
+        this.domObserver.observe(document.body, {
             childList: true,
-            subtree: true
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['src', 'class']  // 监听src和class变化
         });
     }
 }
